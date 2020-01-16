@@ -1,6 +1,7 @@
 var express = require("express");
 var logger = require("morgan");
 var mongoose = require("mongoose");
+var path = require("path");
 
 // Our scraping tools
 var axios = require("axios");
@@ -25,40 +26,52 @@ app.use(express.json());
 app.use(express.static("public"));
 
 //use handlebars for front-end
-var exphbs= require("express-handlebars");
-app.engine("handlebars", exphbs({ defaultLayout: "main" }));
+var exphbs = require("express-handlebars");
+app.engine("handlebars", exphbs({
+    defaultLayout: "main",
+    partialsDir: path.join(__dirname, "/views/layouts/partials")
+}));
 app.set("view engine", "handlebars");
 
 
 // Connect to the Mongo DB
 //mongoose.connect("mongodb://localhost/ArticleDb", {useNewUrlParse : true });
-var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoartnews";
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/ArticleDb";
 
 mongoose.connect(MONGODB_URI);
 
 app.get("/scraped", function(req, res) {
-    axios.get("http://www.artnews.com/category/news/").then(function(response) {
+    axios.get("http://www.echojs.com/").then(function(response) {
       var $ = cheerio.load(response.data);
       //console.log("scraped response:" + JSON.stringify(response.data, null, '\t')); 
-      $("story").each(function(i, element) {
+      $("article h2").each(function(i, element) {
+        
         var result = {};
 
-        result.title = "cascasd";
-    
-        result.link = "caffarfwarfrad";
+        result.title = $(this)
+        .children("a")
+        .text();
 
-        result.summary = "dfvsdfvearveare";
+        result.link = $(this)
+        .children("a")
+        .attr("href");
+
+        result.summary = $(this)
+        .children("a")
+        .text();
+
         
         //console.log("the result");
         console.log("scraped result:" + JSON.stringify(result, null, '\t'));
         db.Article.create(result)
         .then(function(dbArticle) {
-          console.log(dbArticle);
+            console.log(dbArticle);
         })
         .catch(function(err) {
-          console.log(err);
+            console.log(err);
         });
       });
+
 });
 res.send("Scrape Complete");
 });
@@ -81,9 +94,9 @@ app.get("/",function(req, res){
 app.get("/saved", function(req, res) {
     // Grab every document in the Article collection
     db.Article.find({"saved": true})
-        .populate("note")
+        .populate("notes")
         .then(function(dbArticle) {
-            console.log(dbArticle)
+            console.log("from database"+dbArticle)
             var hbsObject= {articles: dbArticle}
             // If we were able to successfully find Article, send them back to the client
             res.render("saved",hbsObject);
@@ -95,9 +108,18 @@ app.get("/saved", function(req, res) {
 });
 //post when client needs to save
 app.post("/saved/:id", function(req,res){
-    db.Article.findOneAndUpdate({"_id": req.params.id},{"$set": {"save":false}})
+    db.Article.findOneAndUpdate({"_id": req.params.id},{"$set": {"saved":true}})
     .then(function(dbArticle){
-        res.json(dbArticle);
+        res.json(dbArticle+"situatioin changes");
+    }).catch(function(err){
+        res.json(err);
+    });
+});
+
+app.post("/delete/:id",function(req,res){
+    db.Article.findByIdAndDelete({"_id": req.params.id},{"set": {"saved":false}})
+    .then(function(result){
+        res.json(result);
     }).catch(function(err){
         res.json(err);
     });
@@ -135,6 +157,17 @@ app.post("/deleteNote/:id", function(req, res){
         res.json(err) 
       });
 });
+
+//delete all the note and the colletion
+ app.get("/clearall", function(req, res) {
+     db.Article.remove({})
+     .then(function(result) {
+         res.json(result);
+       })
+       .catch(function(err) {
+         res.json(err);
+       });
+ })
 
 
 // Start the server
