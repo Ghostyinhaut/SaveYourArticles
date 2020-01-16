@@ -31,7 +31,10 @@ app.set("view engine", "handlebars");
 
 
 // Connect to the Mongo DB
-mongoose.connect("mongodb://localhost/ArticleDb", {useNewUrlParse : true });
+//mongoose.connect("mongodb://localhost/ArticleDb", {useNewUrlParse : true });
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoartnews";
+
+mongoose.connect(MONGODB_URI);
 
 app.get("/scraped", function(req, res) {
     axios.get("http://www.artnews.com/category/news/").then(function(response) {
