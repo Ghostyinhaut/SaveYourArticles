@@ -35,8 +35,8 @@ app.set("view engine", "handlebars");
 
 
 // Connect to the Mongo DB
-//mongoose.connect("mongodb://localhost/ArticleDb", {useNewUrlParse : true });
-var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/ArticleDb";
+mongoose.connect("mongodb://localhost/ArticleDb", {useNewUrlParse : true });
+var MONGODB_URI = process.env.PORT || 3000;
 
 mongoose.connect(MONGODB_URI);
 
