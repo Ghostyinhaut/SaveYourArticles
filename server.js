@@ -36,9 +36,9 @@ app.set("view engine", "handlebars");
 
 // Connect to the Mongo DB
 mongoose.connect("mongodb://localhost/ArticleDb", {useNewUrlParse : true });
-var MONGODB_URI = process.env.PORT || 3000;
+var PORT = process.env.PORT || 3000;
 
-mongoose.connect(MONGODB_URI);
+//mongoose.connect(MONGODB_URI);
 
 app.get("/scraped", function(req, res) {
     axios.get("http://www.echojs.com/").then(function(response) {
