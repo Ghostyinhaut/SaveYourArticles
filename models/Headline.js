@@ -1,7 +1,4 @@
-// Headline model
-// ==============
 
-// Require mongoose
 var mongoose = require("mongoose");
 
 // Create a schema class using mongoose's schema method

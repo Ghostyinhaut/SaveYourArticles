@@ -1,4 +1,4 @@
-/* global bootbox */
+
 $(document).ready(function() {
   // Getting a reference to the article container div we will be rendering all articles inside of
   var articleContainer = $(".article-container");
@@ -25,8 +25,6 @@ $(document).ready(function() {
   }
 
   function renderArticles(articles) {
-    // This function handles appending HTML containing our article data to the page
-    // We are passed an array of JSON containing all available articles in our database
     var articleCards = [];
     // We pass each article JSON object to the createCard function which returns a bootstrap
     // card with our article data inside

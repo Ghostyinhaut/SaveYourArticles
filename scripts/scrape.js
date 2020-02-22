@@ -8,7 +8,7 @@ var cheerio = require("cheerio");
 // This function will scrape the NYTimes website
 var scrape = function() {
   // Scrape the NYTimes website
-  return axios.get("http://www.nytimes.com").then(function(res) {
+  return axios.get("https://www.foxnews.com/").then(function(res) {
     var $ = cheerio.load(res.data);
     console.log("scraping");
     // Make an empty array to save our article info
@@ -47,7 +47,7 @@ var scrape = function() {
         var dataToAdd = {
           headline: headNeat,
           summary: sumNeat,
-          url: "https://www.nytimes.com" + url
+          url: "https://www.foxnews.com/" + url
         };
 
         // Push new article into articles array
